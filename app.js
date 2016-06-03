@@ -1,6 +1,6 @@
 'use strict';
 
-let ui = require('./ui/index.js')
+let recordsManager = require('./recordsManager/index.js')
 let dns = require('native-dns');
 let server = dns.createServer();
 let async = require('async');
@@ -16,7 +16,7 @@ server.serve(53);
 function proxy(question, response, cb) {
 	console.log('proxying: ', question.name, ', type: ', question.type);
 
-	let server = ui.data.remoteDns[0];
+	let server = recordsManager.data.remoteDns[0];
 	if(!server){
 		throw "You need at least one remote server";
 	}
@@ -68,7 +68,7 @@ server.on('request', function handleRequest(request, response) {
 		console.log('request from:', request.address.address, ' for:', question.name, ' type:', qtypeToName(question.type));
 
 		// finding a entry on local base that matches with question
-		let entry = ui.data.entries.filter(r => new RegExp(r.domain, 'i').exec(question.name));
+		let entry = recordsManager.data.entries.filter(r => new RegExp(r.domain, 'i').exec(question.name));
 		if (entry.length) {
 			entry[0].records.forEach(record => {
 				record.name = question.name;
